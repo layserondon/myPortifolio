@@ -1,0 +1,26 @@
+name: Deploy para o S3
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checar o código
+      uses: actions/checkout@v2
+
+    - name: Instalar AWS CLI
+      run: sudo apt-get install awscli -y
+
+    - name: Configurar AWS CLI
+      run: |
+        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws configure set default.region us-east-1
+
+    - name: Fazer Deploy para S3
+      run: |
+        aws s3 sync . s3://meu-site-portfolio --delete
